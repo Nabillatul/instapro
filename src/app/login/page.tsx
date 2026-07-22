@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { signIn, useSession, signOut } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Lock, Phone, ArrowRight, Loader, CheckCircle2, ShoppingBag, LogOut, KeyRound, X, ShieldAlert } from "lucide-react";
 
-export default function LoginPage() {
+function LoginPageContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -528,5 +528,19 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-blush">
+          <Loader className="animate-spin text-brand-500" size={32} />
+        </div>
+      }
+    >
+      <LoginPageContent />
+    </Suspense>
   );
 }
