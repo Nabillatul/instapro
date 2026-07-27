@@ -4,8 +4,6 @@ import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
 import { cloudinary } from "@/lib/cloudinary";
-import fs from "fs";
-import path from "path";
 
 async function processBase64Image(base64Data: string): Promise<string> {
   if (!base64Data.startsWith("data:image/")) {
@@ -15,44 +13,23 @@ async function processBase64Image(base64Data: string): Promise<string> {
   const matches = base64Data.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
   if (!matches) return base64Data;
 
-  const ext = matches[1] || "png";
   const buffer = Buffer.from(matches[2], "base64");
 
-  if (
-    process.env.CLOUDINARY_CLOUD_NAME &&
-    process.env.CLOUDINARY_API_KEY &&
-    process.env.CLOUDINARY_API_SECRET
-  ) {
-    try {
-      const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          {
-            folder: "instapro/profiles",
-            resource_type: "image",
-            transformation: [{ quality: "auto", fetch_format: "auto" }],
-          },
-          (error, result) => {
-            if (error || !result) reject(error || new Error("Cloudinary upload error"));
-            else resolve({ secure_url: result.secure_url });
-          }
-        );
-        stream.end(buffer);
-      });
-      return uploadResult.secure_url;
-    } catch (err) {
-      console.warn("Base64 Cloudinary upload failed, falling back to local file:", err);
-    }
-  }
-
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  }
-
-  const filename = `avatar-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-  const filePath = path.join(uploadsDir, filename);
-  await fs.promises.writeFile(filePath, buffer);
-  return `/uploads/${filename}`;
+  const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "instapro/profiles",
+        resource_type: "image",
+        transformation: [{ quality: "auto", fetch_format: "auto" }],
+      },
+      (error, result) => {
+        if (error || !result) reject(error || new Error("Cloudinary upload error"));
+        else resolve({ secure_url: result.secure_url });
+      }
+    );
+    stream.end(buffer);
+  });
+  return uploadResult.secure_url;
 }
 
 export async function GET() {

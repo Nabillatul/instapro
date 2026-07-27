@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { cloudinary } from "@/lib/cloudinary";
 import { auth } from "@/auth";
 import { cookies } from "next/headers";
-import fs from "fs";
-import path from "path";
 
 async function isAuthenticated() {
   const session = await auth();
@@ -38,48 +36,23 @@ export async function POST(request: Request) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Try uploading to Cloudinary
-    if (
-      process.env.CLOUDINARY_CLOUD_NAME &&
-      process.env.CLOUDINARY_API_KEY &&
-      process.env.CLOUDINARY_API_SECRET
-    ) {
-      try {
-        const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            {
-              folder: "instapro/profiles",
-              resource_type: "image",
-              transformation: [{ quality: "auto", fetch_format: "auto" }],
-            },
-            (error, result) => {
-              if (error || !result) reject(error || new Error("Cloudinary upload error"));
-              else resolve({ secure_url: result.secure_url });
-            }
-          );
-          stream.end(buffer);
-        });
+    // Upload to Cloudinary (always — credentials are baked into @/lib/cloudinary)
+    const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "instapro/profiles",
+          resource_type: "image",
+          transformation: [{ quality: "auto", fetch_format: "auto" }],
+        },
+        (error, result) => {
+          if (error || !result) reject(error || new Error("Cloudinary upload error"));
+          else resolve({ secure_url: result.secure_url });
+        }
+      );
+      stream.end(buffer);
+    });
 
-        return NextResponse.json({ success: true, url: uploadResult.secure_url });
-      } catch (cloudinaryErr) {
-        console.warn("Cloudinary upload failed, falling back to local storage:", cloudinaryErr);
-      }
-    }
-
-    // Local filesystem fallback
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
-
-    const ext = file.name.split(".").pop() || "png";
-    const filename = `avatar-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-    const filePath = path.join(uploadsDir, filename);
-
-    await fs.promises.writeFile(filePath, buffer);
-    const localUrl = `/uploads/${filename}`;
-
-    return NextResponse.json({ success: true, url: localUrl });
+    return NextResponse.json({ success: true, url: uploadResult.secure_url });
   } catch (error: any) {
     console.error("Upload error:", error);
     return NextResponse.json(
