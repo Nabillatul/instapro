@@ -20,6 +20,7 @@ export default async function DashboardPage() {
   try {
     const userEmail = session.user.email;
     if (userEmail) {
+      try {
         const emailClean = userEmail.toLowerCase().trim();
         dbUser = await prisma.user.findFirst({
           where: { email: { equals: emailClean, mode: "insensitive" } },
