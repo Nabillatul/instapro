@@ -3,15 +3,9 @@ import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
-import { v2 as cloudinary } from "cloudinary";
+import { cloudinary } from "@/lib/cloudinary";
 import fs from "fs";
 import path from "path";
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 async function processBase64Image(base64Data: string): Promise<string> {
   if (!base64Data.startsWith("data:image/")) {
@@ -68,8 +62,9 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    const emailClean = session.user.email.toLowerCase().trim();
+    const user = await prisma.user.findFirst({
+      where: { email: { equals: emailClean, mode: "insensitive" } },
       select: {
         id: true,
         name: true,

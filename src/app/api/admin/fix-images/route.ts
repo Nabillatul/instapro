@@ -1,14 +1,8 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { v2 as cloudinary } from "cloudinary";
+import { cloudinary } from "@/lib/cloudinary";
 import fs from "fs";
 import path from "path";
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 async function uploadBase64ToCloudinary(base64Data: string): Promise<string | null> {
   const matches = base64Data.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);

@@ -20,9 +20,9 @@ export default async function DashboardPage() {
   try {
     const userEmail = session.user.email;
     if (userEmail) {
-      try {
-        dbUser = await prisma.user.findUnique({
-          where: { email: userEmail },
+        const emailClean = userEmail.toLowerCase().trim();
+        dbUser = await prisma.user.findFirst({
+          where: { email: { equals: emailClean, mode: "insensitive" } },
           select: { id: true, name: true, email: true, phone: true, role: true, image: true },
         });
       } catch {
