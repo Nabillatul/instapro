@@ -28,20 +28,33 @@ export default function AdminProfileEditor({
   const [saving, setSaving] = useState(false);
   const router = useRouter();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-      alert("Ukuran file maksimal 2MB.");
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Ukuran file maksimal 5MB.");
       return;
     }
     setUploading(true);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImage(reader.result as string);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.url) {
+        setImage(data.url);
+      } else {
+        alert(data.error || "Gagal mengunggah foto.");
+      }
+    } catch {
+      alert("Terjadi kesalahan saat mengunggah foto.");
+    } finally {
       setUploading(false);
-    };
-    reader.readAsDataURL(file);
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {

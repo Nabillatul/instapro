@@ -1,5 +1,4 @@
 import type { NextAuthConfig } from "next-auth";
-import type { JWT } from "next-auth/jwt";
 
 export const authConfig = {
   pages: {
@@ -21,12 +20,12 @@ export const authConfig = {
         token.role = (user as any).role;
         token.id = user.id;
         token.phone = (user as any).phone;
-        token.image = (user as any).image;
+        // Do NOT store image in JWT – large base64 causes HTTP 431
       }
       if (trigger === "update" && session) {
         if (session.name !== undefined) token.name = session.name;
-        if (session.image !== undefined) token.image = session.image;
         if (session.phone !== undefined) token.phone = session.phone;
+        // Do NOT update image in token
       }
       return token;
     },
@@ -35,13 +34,10 @@ export const authConfig = {
         session.user.role = token.role as string;
         session.user.id = (token.id as string) || "";
         session.user.phone = (token.phone as string) || "";
-        session.user.image = (token.image as string) || "";
-        if (token.name) {
-          session.user.name = token.name as string;
-        }
+        // image intentionally NOT stored in session/cookie
       }
       return session;
     },
   },
-  providers: [], // Add providers in auth.ts
+  providers: [],
 } satisfies NextAuthConfig;

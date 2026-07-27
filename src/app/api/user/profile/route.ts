@@ -3,6 +3,63 @@ import { auth } from "@/auth";
 import prisma from "@/lib/prisma";
 import { cookies } from "next/headers";
 import bcrypt from "bcryptjs";
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
+import path from "path";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+async function processBase64Image(base64Data: string): Promise<string> {
+  if (!base64Data.startsWith("data:image/")) {
+    return base64Data;
+  }
+
+  const matches = base64Data.match(/^data:image\/([a-zA-Z0-9]+);base64,(.+)$/);
+  if (!matches) return base64Data;
+
+  const ext = matches[1] || "png";
+  const buffer = Buffer.from(matches[2], "base64");
+
+  if (
+    process.env.CLOUDINARY_CLOUD_NAME &&
+    process.env.CLOUDINARY_API_KEY &&
+    process.env.CLOUDINARY_API_SECRET
+  ) {
+    try {
+      const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "instapro/profiles",
+            resource_type: "image",
+            transformation: [{ quality: "auto", fetch_format: "auto" }],
+          },
+          (error, result) => {
+            if (error || !result) reject(error || new Error("Cloudinary upload error"));
+            else resolve({ secure_url: result.secure_url });
+          }
+        );
+        stream.end(buffer);
+      });
+      return uploadResult.secure_url;
+    } catch (err) {
+      console.warn("Base64 Cloudinary upload failed, falling back to local file:", err);
+    }
+  }
+
+  const uploadsDir = path.join(process.cwd(), "public", "uploads");
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+
+  const filename = `avatar-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+  const filePath = path.join(uploadsDir, filename);
+  await fs.promises.writeFile(filePath, buffer);
+  return `/uploads/${filename}`;
+}
 
 export async function GET() {
   try {
@@ -37,6 +94,11 @@ export async function PATCH(request: NextRequest) {
   try {
     const { name, phone, image, password, email, isAdminUpdate } = await request.json();
 
+    let processedImage = image;
+    if (processedImage && typeof processedImage === "string" && processedImage.startsWith("data:image/")) {
+      processedImage = await processBase64Image(processedImage);
+    }
+
     let hashedPassword: string | undefined;
     if (password && typeof password === "string" && password.trim().length > 0) {
       hashedPassword = await bcrypt.hash(password.trim(), 10);
@@ -65,7 +127,7 @@ export async function PATCH(request: NextRequest) {
       const updateData: any = {};
       if (name) updateData.name = name.trim();
       if (phone !== undefined) updateData.phone = phone ? phone.trim() : null;
-      if (image !== undefined) updateData.image = image;
+      if (processedImage !== undefined) updateData.image = processedImage;
       if (hashedPassword) updateData.password = hashedPassword;
 
       const updated = await prisma.user.update({
@@ -94,7 +156,7 @@ export async function PATCH(request: NextRequest) {
       const updateData: any = {};
       if (name) updateData.name = name.trim();
       if (phone !== undefined) updateData.phone = phone ? phone.trim() : null;
-      if (image !== undefined) updateData.image = image;
+      if (processedImage !== undefined) updateData.image = processedImage;
       if (hashedPassword) updateData.password = hashedPassword;
 
       const updated = await prisma.user.update({

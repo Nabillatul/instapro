@@ -56,7 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: user.email,
             role: user.role,
             phone: user.phone,
-            image: user.image,
+            // image intentionally omitted - fetched from DB on demand, NOT stored in cookie
           };
         } catch (error) {
           console.error("Auth Authorize Error:", error);

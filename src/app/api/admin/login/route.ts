@@ -55,6 +55,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("Admin Login Error:", error);
-    return NextResponse.json({ error: "Terjadi kesalahan server." }, { status: 500 });
+    const msg = error?.message || String(error);
+    if (msg.includes("DATABASE_URL") || msg.includes("Environment variable not found")) {
+      return NextResponse.json(
+        { error: "DATABASE_URL belum diatur di Settings Vercel." },
+        { status: 500 }
+      );
+    }
+    return NextResponse.json(
+      { error: `Kesalahan Database/Server: ${error.message || "Unknown error"}` },
+      { status: 500 }
+    );
   }
 }

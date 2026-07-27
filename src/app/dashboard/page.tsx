@@ -73,7 +73,11 @@ export default async function DashboardPage() {
         <div className="max-w-6xl mx-auto">
 
           {/* Profile Header with Edit */}
-          <DashboardHeader initialUser={userProfile} />
+          <DashboardHeader
+            initialUser={userProfile}
+            ordersCount={orders.length}
+            classesCount={registrations.length}
+          />
 
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Orders */}

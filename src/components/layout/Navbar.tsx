@@ -28,6 +28,32 @@ export default function Navbar() {
   const { data: session, status } = useSession();
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [userImage, setUserImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (status === "authenticated" && session?.user) {
+      fetch("/api/user/profile")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.user?.image) {
+            setUserImage(data.user.image);
+          }
+        })
+        .catch(() => {});
+    } else {
+      setUserImage(null);
+    }
+  }, [status, session]);
+
+  useEffect(() => {
+    const handleProfileUpdate = (e: any) => {
+      if (e.detail?.image !== undefined) {
+        setUserImage(e.detail.image);
+      }
+    };
+    window.addEventListener("profile-updated", handleProfileUpdate);
+    return () => window.removeEventListener("profile-updated", handleProfileUpdate);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -124,9 +150,9 @@ export default function Navbar() {
                   onClick={() => setShowUserDropdown(!showUserDropdown)}
                   className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-bold border border-brand-500/10 bg-brand-500/5 text-navy-500 hover:bg-brand-500/10 transition-all cursor-pointer"
                 >
-                  {session.user.image ? (
+                  {userImage || session.user.image ? (
                     <img
-                      src={session.user.image}
+                      src={userImage || session.user.image!}
                       alt={session.user.name || "User"}
                       className="w-6 h-6 rounded-full object-cover shrink-0"
                     />
@@ -253,9 +279,9 @@ export default function Navbar() {
                 {status === "authenticated" && session?.user ? (
                   <div className="bg-navy-50/50 rounded-2xl p-3 flex flex-col gap-2.5">
                     <div className="flex items-center gap-3">
-                      {session.user.image ? (
+                      {userImage || session.user.image ? (
                         <img
-                          src={session.user.image}
+                          src={userImage || session.user.image!}
                           alt={session.user.name || "User"}
                           className="w-9 h-9 rounded-full object-cover shrink-0"
                         />
