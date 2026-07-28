@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   motion,
   AnimatePresence,
   useMotionValue,
   useSpring,
   useReducedMotion,
+  useInView,
 } from "framer-motion";
 import Link from "next/link";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { getWhatsAppLink } from "@/lib/utils";
+import { getWhatsAppLink, formatRupiah } from "@/lib/utils";
 import { services } from "@/lib/services";
 import LaptopDesignIcon from "@/components/ui/LaptopDesignIcon";
 import {
@@ -22,8 +23,30 @@ import {
   MessageCircle,
   ArrowRight,
   Star,
+  Search,
+  Eye,
+  X,
+  CheckCircle2,
+  Zap,
+  Sparkles,
+  PhoneCall,
+  BadgeCheck,
+  ShieldCheck,
 } from "lucide-react";
 
+interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  image: string;
+  gallery: string[];
+  category: string;
+  features: string[];
+  stock: number;
+  featured: boolean;
+}
 
 const iconMap: Record<string, React.ReactNode> = {
   LaptopDesignIcon: <LaptopDesignIcon size={20} />,
@@ -55,13 +78,56 @@ const stageVariant = {
   },
 };
 
+const cardVariant = {
+  hidden: { opacity: 0, y: 30, scale: 0.96 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
+const whyUs = [
+  { icon: <ShieldCheck size={22} />, title: "Terpercaya & Berlisensi", desc: "Sistem kami telah digunakan oleh instansi pemerintah dan korporasi di seluruh Indonesia." },
+  { icon: <Zap size={22} />, title: "Implementasi Cepat", desc: "Proses onboarding dan serah terima sistem dilakukan dalam waktu efisien." },
+  { icon: <BadgeCheck size={22} />, title: "Dukungan Purna Jual", desc: "Garansi pemeliharaan dan konsultasi teknis pasca proyek tanpa biaya tambahan." },
+  { icon: <Sparkles size={22} />, title: "Inovasi Berkelanjutan", desc: "Teknologi kami selalu diperbarui sesuai tren dan kebutuhan era digital." },
+];
 
 export default function LayananPage() {
   const [activeId, setActiveId] = useState<string>(services[0]?.id ?? "");
   const active = services.find((s) => s.id === activeId) ?? services[0];
 
-  // Magnetic hover effect for the primary CTA
+  // Catalog products state
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [activeCategory, setActiveCategory] = useState("Semua");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  // Fetch products
+  useEffect(() => {
+    fetch("/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && Array.isArray(data.products)) {
+          setProducts(data.products);
+        }
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setLoadingProducts(false));
+  }, []);
+
+  const categories = ["Semua", ...Array.from(new Set(products.map((p) => p.category).filter(Boolean)))];
+
+  const filteredProducts = products.filter((p) => {
+    const matchCategory = activeCategory === "Semua" || p.category === activeCategory;
+    const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchCategory && matchSearch;
+  });
+
+  // Magnetic hover effect for CTA
   const reduceMotion = useReducedMotion();
   const ctaX = useMotionValue(0);
   const ctaY = useMotionValue(0);
@@ -78,6 +144,9 @@ export default function LayananPage() {
     ctaX.set(0);
     ctaY.set(0);
   };
+
+  const whyRef = useRef(null);
+  const whyInView = useInView(whyRef, { once: true, amount: 0.2 });
 
   return (
     <div className="pt-28 pb-20 bg-blush bg-nodes relative overflow-hidden">
@@ -104,7 +173,7 @@ export default function LayananPage() {
           animate={{ opacity: 1, y: 0 }}
           className="inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 glass border border-brand-500/10 text-brand-500"
         >
-          Program Layanan
+          Program & Katalog Layanan
         </motion.span>
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -112,7 +181,7 @@ export default function LayananPage() {
           transition={{ delay: 0.1 }}
           className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-navy-500 mb-6"
         >
-          <span className="text-gradient">Services</span>
+          Layanan & <span className="text-gradient">Katalog Sistem</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -120,13 +189,66 @@ export default function LayananPage() {
           transition={{ delay: 0.2 }}
           className="text-base md:text-lg text-navy-500/70 max-w-2xl mx-auto font-medium"
         >
-          Kami menyediakan berbagai layanan pengembangan teknologi digital, mulai dari pembuatan website, pengembangan sistem informasi, hingga pelatihan dan pendampingan peningkatan kapasitas SDM untuk membantu organisasi dan bisnis berkembang di era digital.
+          Kami menyediakan berbagai program layanan konsultasi digital, pengembangan sistem kustom, hingga katalog paket produk sistem informasi siap pakai untuk instansi dan bisnis Anda.
         </motion.p>
+
+        {/* Hero CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8"
+        >
+          <motion.a
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.96 }}
+            href={getWhatsAppLink("Halo Instapro, saya ingin berkonsultasi mengenai layanan Instapro.")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary px-8 py-3.5 shadow-lg shadow-brand-500/20"
+          >
+            <PhoneCall size={17} /> Konsultasi Gratis via WA
+          </motion.a>
+          <motion.a
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.96 }}
+            href="#katalog-produk"
+            className="btn-secondary px-8 py-3.5 border-navy-500/10 text-navy-500 hover:bg-navy-50 inline-flex items-center gap-2"
+          >
+            Lihat Katalog Produk <ArrowRight size={17} />
+          </motion.a>
+        </motion.div>
+      </section>
+
+      {/* Why Us Strip */}
+      <section ref={whyRef} className="relative z-10 section-container mb-24">
+        <motion.div
+          variants={containerStagger}
+          initial="hidden"
+          animate={whyInView ? "show" : "hidden"}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+        >
+          {whyUs.map((item, i) => (
+            <motion.div
+              key={i}
+              variants={cardVariant}
+              whileHover={{ y: -6, boxShadow: "0 20px 40px -10px rgba(0,0,0,0.1)" }}
+              className="glass rounded-2xl bg-white border border-navy-500/5 p-6 flex flex-col gap-3 transition-shadow duration-300"
+            >
+              <div className="w-11 h-11 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center">
+                {item.icon}
+              </div>
+              <h4 className="text-navy-500 font-extrabold text-sm">{item.title}</h4>
+              <p className="text-navy-500/60 text-xs font-semibold leading-relaxed">{item.desc}</p>
+            </motion.div>
+          ))}
+        </motion.div>
       </section>
 
       {/* Interactive Services: tab list + detail panel */}
       <section className="relative z-10 section-container mb-24">
-        <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 max-w-5xl mx-auto items-start">
+        <SectionHeading badge="Program Kami" title="Layanan Unggulan Instapro" subtitle="Pilih program yang sesuai kebutuhan organisasi atau bisnis Anda." />
+        <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6 max-w-5xl mx-auto items-start mt-12">
           {/* Tab list */}
           <motion.div
             initial={{ opacity: 0, x: -16 }}
@@ -193,7 +315,6 @@ export default function LayananPage() {
                     </p>
                   </div>
 
-
                   {/* Case Study */}
                   {active.caseStudy && (
                     <motion.div
@@ -217,7 +338,7 @@ export default function LayananPage() {
                     </motion.div>
                   )}
 
-                  {/* Order & Consult Actions */}
+                  {/* Order & Consult Actions — WA Only */}
                   <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-navy-500/5">
                     <motion.a
                       whileHover={{ scale: 1.03 }}
@@ -232,7 +353,7 @@ export default function LayananPage() {
                     </motion.a>
                     <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                       <Link
-                        href="/kontak"
+                        href="/tentang-kami#kontak"
                         className="btn-secondary text-xs py-3 justify-center border-navy-500/10 text-navy-500 hover:bg-navy-50 w-full"
                       >
                         Kirim Form Penawaran
@@ -244,6 +365,141 @@ export default function LayananPage() {
             </AnimatePresence>
           </div>
         </div>
+      </section>
+
+      {/* ===== KATALOG PRODUK & PENJUALAN SISTEM SECTION ===== */}
+      <section id="katalog-produk" className="relative z-10 section-container mb-24">
+        <SectionHeading
+          badge="Katalog Paket Produk"
+          title="Pilih Paket Sistem Informasi"
+          subtitle="Jelajahi paket aplikasi dan sistem tata kelola digital. Hubungi kami via WhatsApp untuk mendapatkan penawaran terbaik."
+        />
+
+        {/* Filter & Search Controls */}
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between mt-10 mb-8">
+          <div className="relative w-full md:w-80">
+            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-navy-500/30" />
+            <input
+              type="text"
+              placeholder="Cari nama sistem..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-11 pr-4 py-3 rounded-2xl bg-white border border-navy-100 text-navy-900 placeholder:text-navy-500/30 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 shadow-sm text-xs font-semibold"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                  activeCategory === cat
+                    ? "bg-brand-500 text-white shadow-sm"
+                    : "bg-white border border-navy-100 text-navy-500/70 hover:bg-navy-50"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Product Cards Grid */}
+        {loadingProducts ? (
+          <div className="text-center py-16 text-navy-500/50 font-bold text-sm">
+            Memuat Katalog Produk...
+          </div>
+        ) : (
+          <motion.div
+            variants={containerStagger}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.05 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {filteredProducts.map((product, idx) => (
+              <motion.div
+                key={product.id}
+                variants={cardVariant}
+                whileHover={{ y: -8, boxShadow: "0 30px 60px -15px rgba(0,0,0,0.12)" }}
+                className="group glass rounded-3xl bg-white overflow-hidden flex flex-col border border-navy-500/5 shadow-sm transition-all duration-300 relative"
+              >
+                {/* Gradient accent top border */}
+                <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-3xl" />
+
+                <div className="aspect-[16/10] bg-blush-50/40 relative overflow-hidden flex items-center justify-center p-6 border-b border-navy-500/5">
+                  <div className="absolute inset-0 bg-dots opacity-20 pointer-events-none" />
+                  <img
+                    src={product.image || "/images/logo simtkd 2.png"}
+                    alt={product.name}
+                    className="max-w-[70%] max-h-[70%] w-auto h-auto object-contain group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <span className="absolute top-3 right-3 px-3 py-1 rounded-full text-[9px] font-extrabold bg-navy-500 text-white uppercase tracking-wider">
+                    {product.category}
+                  </span>
+                  {product.featured && (
+                    <span className="absolute top-3 left-3 px-3 py-1 rounded-full text-[9px] font-extrabold bg-brand-500 text-white uppercase tracking-wider flex items-center gap-1">
+                      <Star size={9} /> Unggulan
+                    </span>
+                  )}
+                </div>
+
+                <div className="p-6 flex flex-col flex-1 justify-between">
+                  <div>
+                    <h3 className="text-navy-500 font-extrabold text-base mb-2 group-hover:text-brand-500 transition-colors">
+                      {product.name}
+                    </h3>
+                    <p className="text-navy-500/60 text-xs font-semibold leading-relaxed line-clamp-3 mb-4">
+                      {product.description}
+                    </p>
+
+                    {/* Features list bullet points */}
+                    {product.features && product.features.length > 0 && (
+                      <div className="space-y-1.5 mb-6">
+                        {product.features.slice(0, 3).map((feat, i) => (
+                          <div key={i} className="flex items-center gap-2 text-[11px] font-bold text-navy-500/70">
+                            <CheckCircle2 size={13} className="text-brand-500 flex-shrink-0" />
+                            <span className="truncate">{feat}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-4 border-t border-navy-500/5 flex items-center justify-between mt-auto">
+                    <div>
+                      <span className="text-[10px] font-bold text-navy-500/40 uppercase block">Investasi Paket</span>
+                      <span className="text-brand-500 font-extrabold text-base">
+                        {formatRupiah(product.price)}
+                      </span>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setSelectedProduct(product)}
+                        className="p-2.5 rounded-xl border border-navy-100 bg-white text-navy-500/70 hover:text-brand-500 hover:bg-navy-50 transition-all cursor-pointer"
+                        title="Detail Produk"
+                      >
+                        <Eye size={16} />
+                      </button>
+                      <motion.a
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.96 }}
+                        href={getWhatsAppLink(`Halo Instapro, saya tertarik dengan paket *${product.name}* seharga ${formatRupiah(product.price)}. Mohon info lebih lanjut.`)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3.5 py-2.5 rounded-xl bg-brand-500 text-white font-bold text-xs flex items-center gap-1.5 hover:bg-brand-600 transition-all cursor-pointer shadow-sm"
+                      >
+                        <MessageCircle size={14} /> Pesan WA
+                      </motion.a>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
       </section>
 
       {/* Work Process — animated timeline stepper */}
@@ -307,14 +563,18 @@ export default function LayananPage() {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="relative z-10 section-container"
       >
-        <div className="glass rounded-3xl p-10 md:p-16 border border-brand-500/10 bg-white/90 text-center max-w-3xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-navy-500 mb-3">
+        <div className="relative overflow-hidden glass rounded-3xl p-10 md:p-16 border border-brand-500/10 bg-gradient-to-br from-white via-blush-50/60 to-brand-50/30 text-center max-w-3xl mx-auto">
+          {/* Decorative orbs */}
+          <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-brand-500/10 blur-2xl pointer-events-none" />
+          <div className="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-navy-500/5 blur-2xl pointer-events-none" />
+          
+          <h2 className="text-2xl md:text-3xl font-extrabold text-navy-500 mb-3 relative z-10">
             Butuh Paket Solusi Custom?
           </h2>
-          <p className="text-navy-500/70 mb-8 max-w-lg mx-auto text-sm font-semibold">
+          <p className="text-navy-500/70 mb-8 max-w-lg mx-auto text-sm font-semibold relative z-10">
             Mari rumuskan sistem digitalisasi administrasi yang disesuaikan dengan struktur birokrasi dan kapasitas anggaran daerah Anda.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
             <motion.a
               style={{ x: ctaSpringX, y: ctaSpringY }}
               onMouseMove={handleCtaMove}
@@ -324,18 +584,102 @@ export default function LayananPage() {
               href={getWhatsAppLink("Halo Instapro, saya butuh solusi sistem kustom.")}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-primary px-8 py-3"
+              className="btn-primary px-8 py-3.5 shadow-lg shadow-brand-500/20"
             >
               <MessageCircle size={18} /> Hubungi WhatsApp
             </motion.a>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.96 }}>
-              <Link href="/katalog" className="btn-secondary px-8 py-3 border-navy-500/10 text-navy-500 hover:bg-navy-50">
-                Lihat Katalog Layanan <ArrowRight size={18} />
-              </Link>
+              <a href="#katalog-produk" className="btn-secondary px-8 py-3.5 border-navy-500/10 text-navy-500 hover:bg-navy-50 inline-flex items-center gap-2">
+                Lihat Katalog Paket <ArrowRight size={18} />
+              </a>
             </motion.div>
           </div>
         </div>
       </motion.section>
+
+      {/* ===== MODAL DETAIL PRODUK ===== */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedProduct(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-navy-950/65 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.92, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.92, y: 20 }}
+              transition={{ type: "spring", stiffness: 320, damping: 30 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-2xl max-h-[90vh] bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col sm:flex-row"
+            >
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 text-navy-500 flex items-center justify-center hover:bg-white shadow-md z-20 cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+
+              {/* Left: Product Image */}
+              <div className="sm:w-[45%] aspect-square sm:aspect-auto bg-blush-50/40 flex items-center justify-center p-8 flex-shrink-0 border-b sm:border-b-0 sm:border-r border-navy-500/5">
+                <img
+                  src={selectedProduct.image || "/images/logo simtkd 2.png"}
+                  alt={selectedProduct.name}
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+
+              {/* Right: Info */}
+              <div className="flex-1 p-6 flex flex-col justify-between overflow-y-auto">
+                <div>
+                  <span className="text-brand-500 text-[10px] font-extrabold uppercase tracking-wider block mb-1">
+                    {selectedProduct.category}
+                  </span>
+                  <h3 className="text-navy-500 font-extrabold text-lg mb-2 leading-snug">
+                    {selectedProduct.name}
+                  </h3>
+                  <p className="text-navy-500/70 text-xs font-semibold leading-relaxed mb-4">
+                    {selectedProduct.description}
+                  </p>
+
+                  {selectedProduct.features && selectedProduct.features.length > 0 && (
+                    <div className="space-y-1.5 bg-navy-50/50 p-4 rounded-xl">
+                      <span className="text-[10px] font-extrabold text-navy-500 uppercase tracking-wider block mb-2">Fitur Unggulan:</span>
+                      {selectedProduct.features.map((f, i) => (
+                        <div key={i} className="flex items-center gap-2 text-xs font-bold text-navy-500/80">
+                          <CheckCircle2 size={13} className="text-brand-500 flex-shrink-0" />
+                          <span>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-4 border-t border-navy-500/5 mt-4">
+                  <div className="mb-4">
+                    <span className="text-[10px] font-bold text-navy-500/40 uppercase block">Harga Paket</span>
+                    <span className="text-brand-500 font-extrabold text-xl">
+                      {formatRupiah(selectedProduct.price)}
+                    </span>
+                  </div>
+                  <motion.a
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    href={getWhatsAppLink(`Halo Instapro, saya berminat dengan paket *${selectedProduct.name}* seharga ${formatRupiah(selectedProduct.price)}. Mohon info lebih lanjut mengenai spesifikasi dan cara pemesanan.`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary w-full justify-center py-3.5 text-xs"
+                  >
+                    <MessageCircle size={16} /> Pesan via WhatsApp
+                  </motion.a>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

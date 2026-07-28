@@ -1,0 +1,32 @@
+[
+  {
+    "id": "kp-1",
+    "title": "Pelatihan Digitalisasi Administrasi Desa",
+    "imageUrl": "/images/gambarbg2.jpeg",
+    "caption": "Diskusi publik dan pendampingan implementasi aplikasi tata kelola desa bersama perangkat aparatur daerah.",
+    "authorName": "Drs. Ahmad Subakti",
+    "authorRole": "Kepala Dinas Pemberdayaan Masyarakat Desa",
+    "category": "Pelatihan Aparatur",
+    "createdAt": "2026-07-28T10:27:51.866Z"
+  },
+  {
+    "id": "kp-2",
+    "title": "Workshop Sertifikasi SDM & IT Governance",
+    "imageUrl": "/gambarbg.jpeg",
+    "caption": "Momen kelulusan peserta batch intensif Instapro Learning Academy dengan penyerahan sertifikat resmi.",
+    "authorName": "Bpk. Krido Kawal Basuki",
+    "authorRole": "Kepala Desa Tambusai",
+    "category": "Testimoni Alumni",
+    "createdAt": "2026-07-28T10:27:51.866Z"
+  },
+  {
+    "id": "kp-3",
+    "title": "Pendampingan Teknis Operator SIM-TKD & PELITA",
+    "imageUrl": "https://res.cloudinary.com/gjqr4z7l/image/upload/v1785234469/instapro/profiles/sfdonffwsiuacsmftr3t.jpg",
+    "caption": "Sesi simulasi langsung pengoperasian portal administrasi desa dan pengolahan data kependudukan online.",
+    "authorName": "Siti Rahmawati, S.Kom",
+    "authorRole": "Operator SIM-TKD Desa Rumbio",
+    "category": "In-House Training",
+    "createdAt": "2026-07-28T10:27:51.866Z"
+  }
+]

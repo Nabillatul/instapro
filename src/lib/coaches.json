@@ -1,0 +1,24 @@
+[
+  {
+    "id": "coach-1",
+    "name": "Setyo Irawan, S.IP",
+    "title": "Head Coach ",
+    "bio": "Pakar tata kelola birokrasi, strategi transformasi digital, dan pendampingan peningkatan kapasitas SDM institusi, korporasi, serta desa dengan pengalaman lebih dari 10 tahun.",
+    "image": "/images/Setyo Irawan, S.IP.jpg",
+    "skills": [
+      "Public Speaking"
+    ]
+  },
+  {
+    "id": "coach-1785233982874",
+    "name": "Refandy",
+    "title": "Coach",
+    "bio": "Gokilll",
+    "image": "https://res.cloudinary.com/gjqr4z7l/image/upload/v1785233975/instapro/profiles/b71olqgi3d6ggrgldmgl.jpg",
+    "skills": [
+      "Transformasi Digital",
+      "Tata Kelola Daerah",
+      "SDM Leadership"
+    ]
+  }
+]

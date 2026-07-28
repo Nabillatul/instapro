@@ -846,7 +846,7 @@ export default function HomePage() {
                 Hubungi Kami Sekarang
               </motion.a>
               <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
-                <Link href="/kontak" className="btn-secondary border-navy-500/20 text-navy-500 font-bold hover:bg-navy-50 px-8 py-4 w-full sm:w-auto">
+                <Link href="/tentang-kami#kontak" className="btn-secondary border-navy-500/20 text-navy-500 font-bold hover:bg-navy-50 px-8 py-4 w-full sm:w-auto">
                   Request Quote
                   <ArrowRight size={18} />
                 </Link>

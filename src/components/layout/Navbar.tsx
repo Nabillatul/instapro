@@ -13,17 +13,14 @@ const navLinks = [
   { href: "/tentang-kami", label: "Tentang Kami" },
   { href: "/layanan", label: "Layanan" },
   { href: "/berita", label: "Berita" },
-  { href: "/katalog", label: "Katalog" },
-  { href: "/kelas-quantum", label: "Kelas Instapro" },
+  { href: "/kelas-quantum", label: "Kelas Instapro Learning Academy" },
   { href: "/analytics", label: "Analytics" },
-  { href: "/kontak", label: "Kontak" },
 ];
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const { totalItems } = useCart();
   const navRef = useRef<HTMLDivElement>(null);
   const { data: session, status } = useSession();
   const [showUserDropdown, setShowUserDropdown] = useState(false);
@@ -126,23 +123,6 @@ export default function Navbar() {
 
           {/* Right side */}
           <div className="flex items-center gap-2">
-            {/* Cart */}
-            <Link
-              href="/keranjang"
-              className="relative p-2 rounded-xl text-navy-500/70 hover:text-navy-500 hover:bg-navy-500/5 transition-all"
-            >
-              <ShoppingCart size={20} />
-              {totalItems > 0 && (
-                <motion.span
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -top-1 -right-1 w-5 h-5 bg-brand-500 text-white text-xs font-bold rounded-full flex items-center justify-center"
-                >
-                  {totalItems}
-                </motion.span>
-              )}
-            </Link>
-
             {/* Login */}
             {status === "authenticated" && session?.user ? (
               <div className="relative hidden sm:block" ref={dropdownRef}>
@@ -227,7 +207,7 @@ export default function Navbar() {
 
             {/* Request Quote */}
             <Link
-              href="/kontak"
+              href="/tentang-kami#kontak"
               className="hidden md:flex btn-primary text-xs px-4 py-2"
             >
               Request Quote
@@ -315,7 +295,7 @@ export default function Navbar() {
                     <Link href="/login" className="flex-1 btn-secondary text-xs justify-center py-2.5">
                       <User size={14} /> Login
                     </Link>
-                    <Link href="/kontak" className="flex-1 btn-primary text-xs justify-center py-2.5">
+                    <Link href="/tentang-kami#kontak" className="flex-1 btn-primary text-xs justify-center py-2.5">
                       Request Quote
                     </Link>
                   </div>

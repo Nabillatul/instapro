@@ -6,10 +6,10 @@ const footerLinks = {
     { href: "/", label: "Home" },
     { href: "/tentang-kami", label: "Tentang Kami" },
     { href: "/layanan", label: "Layanan" },
-    { href: "/kontak", label: "Hubungi Kami" },
+    { href: "/tentang-kami#kontak", label: "Hubungi Kami" },
   ],
   business: [
-    { href: "/katalog", label: "Katalog Produk" },
+    { href: "/layanan#katalog-produk", label: "Katalog & Layanan" },
     { href: "/kelas-quantum", label: "Kelas Instapro" },
     { href: "/berita", label: "Berita & Artikel" },
     { href: "/analytics", label: "Analytics" },
