@@ -184,16 +184,53 @@ export default function DashboardHeader({
   return (
     <>
       {/* Main Profile Header Card */}
-      <div className="relative overflow-hidden rounded-3xl bg-white border border-navy-500/10 shadow-xl mb-8">
+      <motion.div
+        initial={{ opacity: 0, y: 30, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="relative overflow-hidden rounded-3xl bg-white border border-navy-500/10 shadow-xl mb-8"
+      >
         {/* Decorative Top Hero Banner */}
         <div className="h-32 md:h-40 bg-gradient-to-r from-brand-600 via-brand-500 to-indigo-600 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2),transparent_60%)]" />
-          <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
+          <motion.div
+            className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.25),transparent_60%)]"
+            animate={{ opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute -bottom-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"
+            animate={{ scale: [1, 1.2, 1], x: [0, 15, 0] }}
+            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          />
           <div className="absolute top-4 right-6 flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold bg-white/20 backdrop-blur-md text-white border border-white/20 shadow-sm uppercase tracking-wider">
-              <Sparkles size={12} className="text-yellow-300 animate-pulse" />
-              {user.role === "admin" ? "Super Admin" : "Member VIP"}
-            </span>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[11px] font-extrabold bg-gradient-to-r from-brand-500 via-indigo-500 to-brand-600 text-white border border-white/30 shadow-lg overflow-hidden group cursor-default"
+            >
+              {/* Moving shimmer light beam */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                animate={{ x: ["-100%", "200%"] }}
+                transition={{ duration: 2.8, repeat: Infinity, ease: "linear" }}
+              />
+
+              <motion.div
+                animate={{ rotate: [0, 18, -18, 0], scale: [1, 1.25, 1] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <Sparkles size={13} className="text-yellow-300 drop-shadow-md" />
+              </motion.div>
+
+              <span className="relative z-10 uppercase tracking-wider drop-shadow-xs">
+                {user.role === "admin"
+                  ? "Super Admin"
+                  : classesCount > 0
+                  ? "Member Instapro Learning Academy"
+                  : "Member Instapro"}
+              </span>
+            </motion.div>
           </div>
         </div>
 
@@ -202,8 +239,14 @@ export default function DashboardHeader({
           <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-6 -mt-16 md:-mt-20">
             {/* Avatar & Main Info */}
             <div className="flex flex-col sm:flex-row items-center sm:items-end gap-5 text-center sm:text-left w-full md:w-auto">
-              {/* Profile Avatar Container */}
-              <div className="relative group shrink-0">
+              {/* Profile Avatar Container with 3D Hover & Glow */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+                whileHover={{ scale: 1.05, rotate: 2 }}
+                className="relative group shrink-0"
+              >
                 <div className="w-24 h-24 md:w-28 md:h-28 rounded-2xl p-1 bg-white shadow-2xl border-2 border-brand-500/20 relative">
                   {user.image ? (
                     <img
@@ -218,7 +261,11 @@ export default function DashboardHeader({
                   )}
 
                   {/* Online Status Badge */}
-                  <span className="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white ring-2 ring-emerald-400/30" />
+                  <motion.span
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white ring-2 ring-emerald-400/30"
+                  />
                 </div>
 
                 <button
@@ -232,17 +279,26 @@ export default function DashboardHeader({
                 >
                   <Camera className="text-white drop-shadow-md" size={24} />
                 </button>
-              </div>
+              </motion.div>
 
               {/* User Text Meta */}
-              <div className="space-y-1 pb-1">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.25 }}
+                className="space-y-1 pb-1"
+              >
                 <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
                   <h1 className="text-2xl md:text-3xl font-black text-navy-500 tracking-tight">
                     {user.name}
                   </h1>
-                  <span title="Akun Terverifikasi">
+                  <motion.span
+                    animate={{ scale: [1, 1.15, 1] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    title="Akun Terverifikasi"
+                  >
                     <ShieldCheck size={20} className="text-brand-500" />
-                  </span>
+                  </motion.span>
                 </div>
 
                 <div className="flex items-center justify-center sm:justify-start gap-4 text-navy-500/60 text-xs font-semibold flex-wrap">
@@ -257,83 +313,99 @@ export default function DashboardHeader({
                     </span>
                   )}
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             {/* Quick Action Buttons */}
-            <div className="flex items-center gap-2.5 w-full md:w-auto justify-center sm:justify-end flex-wrap">
-              <button
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex items-center gap-2.5 w-full md:w-auto justify-center sm:justify-end flex-wrap"
+            >
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.96 }}
                 type="button"
                 onClick={() => {
                   setActiveTab("profile");
                   setIsEditing(true);
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-navy-50 text-navy-600 hover:bg-brand-50 hover:text-brand-600 border border-navy-100 transition-all duration-200 cursor-pointer shadow-sm active:scale-95"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-navy-50 text-navy-600 hover:bg-brand-50 hover:text-brand-600 border border-navy-100 transition-colors duration-200 cursor-pointer shadow-sm"
               >
                 <Settings size={15} className="text-brand-500" />
                 Edit Profil
-              </button>
+              </motion.button>
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.96 }}
                 type="button"
                 onClick={() => {
                   setActiveTab("password");
                   setIsEditing(true);
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-navy-50 text-navy-600 hover:bg-brand-50 hover:text-brand-600 border border-navy-100 transition-all duration-200 cursor-pointer shadow-sm active:scale-95"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-navy-50 text-navy-600 hover:bg-brand-50 hover:text-brand-600 border border-navy-100 transition-colors duration-200 cursor-pointer shadow-sm"
               >
                 <KeyRound size={15} className="text-amber-500" />
                 Ubah Password
-              </button>
+              </motion.button>
 
               {user.role === "admin" && (
-                <a
+                <motion.a
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.96 }}
                   href="/admin"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-brand-500 to-indigo-600 text-white hover:shadow-lg hover:shadow-brand-500/25 transition-all duration-200 active:scale-95"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-brand-500 to-indigo-600 text-white shadow-md hover:shadow-brand-500/25 transition-all duration-200"
                 >
                   <ShieldCheck size={15} />
                   Admin Panel
-                </a>
+                </motion.a>
               )}
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.96 }}
                 type="button"
                 onClick={() => signOut({ callbackUrl: "/login" })}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-100 transition-all duration-200 cursor-pointer active:scale-95"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-100 transition-colors duration-200 cursor-pointer shadow-sm"
               >
                 <LogOut size={15} />
                 Keluar
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           </div>
 
           {/* Quick Overview Stats Bar */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-8 pt-6 border-t border-navy-500/10">
-            <div className="bg-gradient-to-br from-navy-50/60 to-slate-50/60 p-3.5 rounded-2xl border border-navy-500/5 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-600 flex items-center justify-center shrink-0">
-                <ShoppingBag size={20} />
-              </div>
-              <div>
-                <p className="text-[10px] font-extrabold uppercase text-navy-500/40 tracking-wider">
-                  Total Pesanan
-                </p>
-                <p className="text-lg font-black text-navy-500">{ordersCount} Pesanan</p>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-navy-50/60 to-slate-50/60 p-3.5 rounded-2xl border border-navy-500/5 flex items-center gap-3">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8 pt-6 border-t border-navy-500/10"
+          >
+            <motion.div
+              whileHover={{ y: -4, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="bg-gradient-to-br from-navy-50/60 to-slate-50/60 p-4 rounded-2xl border border-navy-500/5 flex items-center gap-3 shadow-xs cursor-default"
+            >
               <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center shrink-0">
                 <GraduationCap size={20} />
               </div>
               <div>
                 <p className="text-[10px] font-extrabold uppercase text-navy-500/40 tracking-wider">
-                  Kelas Quantum
+                  Kelas Instapro
                 </p>
-                <p className="text-lg font-black text-navy-500">{classesCount} Terdaftar</p>
+                <p className={`text-base font-black ${classesCount > 0 ? "text-indigo-600" : "text-navy-500/60"}`}>
+                  {classesCount > 0 ? "Terdaftar" : "Belum Terdaftar"}
+                </p>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="col-span-2 md:col-span-1 bg-gradient-to-br from-emerald-50/60 to-teal-50/60 p-3.5 rounded-2xl border border-emerald-500/10 flex items-center gap-3">
+            <motion.div
+              whileHover={{ y: -4, scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="bg-gradient-to-br from-emerald-50/60 to-teal-50/60 p-4 rounded-2xl border border-emerald-500/10 flex items-center gap-3 shadow-xs cursor-default"
+            >
               <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
                 <CheckCircle2 size={20} />
               </div>
@@ -343,10 +415,10 @@ export default function DashboardHeader({
                 </p>
                 <p className="text-sm font-black text-emerald-700">Aktif & Terverifikasi</p>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Edit Profile & Ubah Password Modern Modal */}
       <AnimatePresence>

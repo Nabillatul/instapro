@@ -84,8 +84,10 @@ export default async function AdminLayout({
                 Situs Publik
               </Link>
 
-              {/* Admin Profile Editor (Client Component) */}
-              <AdminProfileEditor admin={adminProfile} adminInitial={adminInitial} />
+              {/* Admin Profile Editor (Client Component) — click goes to profil page */}
+              <Link href="/admin/profil" title="Lihat & Edit Profil Admin">
+                <AdminProfileEditor admin={adminProfile} adminInitial={adminInitial} />
+              </Link>
 
               <AdminLogoutButton />
             </div>

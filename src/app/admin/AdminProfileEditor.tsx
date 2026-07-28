@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { User, Phone, Camera, Loader, Check, X, KeyRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -89,27 +90,36 @@ export default function AdminProfileEditor({
 
   return (
     <>
-      {/* Avatar + info */}
-      <div className="flex items-center gap-3 cursor-pointer" onClick={() => setIsEditing(true)} title="Edit Profil">
+      {/* Avatar + info — clicking goes to profil page via layout Link wrapper */}
+      <motion.div
+        whileHover={{ scale: 1.04 }}
+        whileTap={{ scale: 0.97 }}
+        className="flex items-center gap-3 cursor-pointer"
+        title="Profil Admin"
+      >
         <div className="relative group shrink-0">
           {profile.image ? (
             <img
               src={profile.image}
               alt={profile.name}
-              className="w-9 h-9 rounded-full object-cover border-2 border-brand-500/20 shadow-sm"
+              className="w-9 h-9 rounded-full object-cover border-2 border-amber-400/30 shadow-sm group-hover:border-amber-400/60 transition-all"
             />
           ) : (
-            <div className="w-9 h-9 rounded-full bg-brand-500 text-white flex items-center justify-center text-sm font-extrabold">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center text-sm font-extrabold shadow-sm">
               {adminInitial}
             </div>
           )}
-          <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-white" />
+          <motion.span
+            animate={{ scale: [1, 1.3, 1] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-white"
+          />
         </div>
         <div className="hidden sm:block text-right leading-tight">
-          <p className="text-xs font-extrabold text-navy-500 truncate max-w-[120px]">{profile.name}</p>
-          <p className="text-[9px] font-bold text-navy-500/40 truncate max-w-[120px]">{profile.email}</p>
+          <p className="text-xs font-extrabold text-navy-500">{profile.name}</p>
+          <p className="text-[9px] font-bold text-navy-500/40">{profile.email}</p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Edit Modal */}
       {isEditing && (
