@@ -24,6 +24,16 @@ import {
 import { getWhatsAppLink } from "@/lib/utils";
 import SectionHeading from "@/components/ui/SectionHeading";
 
+interface ClassPhoto {
+  id: string;
+  title: string;
+  imageUrl: string;
+  caption: string;
+  authorName: string;
+  authorRole: string;
+  category: string;
+}
+
 interface Coach {
   id: string;
   name: string;
