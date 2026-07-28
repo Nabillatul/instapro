@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
 
 export async function requireAdmin() {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const adminSession = cookieStore.get("admin_session");
 
   if (!adminSession || adminSession.value !== "authenticated") {

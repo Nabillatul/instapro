@@ -7,7 +7,7 @@ async function isAuthenticated() {
   const session = await auth();
   if (session?.user) return true;
 
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
   const adminSession = cookieStore.get("admin_session");
   if (adminSession && adminSession.value === "authenticated") return true;
 

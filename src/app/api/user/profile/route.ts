@@ -78,7 +78,7 @@ export async function PATCH(request: NextRequest) {
 
     if (isAdminUpdate) {
       // Admin update: check admin cookie
-      const cookieStore = await cookies();
+      const cookieStore = cookies();
       const adminSession = cookieStore.get("admin_session");
       if (!adminSession || adminSession.value !== "authenticated") {
         return NextResponse.json({ error: "Unauthorized Admin" }, { status: 401 });
