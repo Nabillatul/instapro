@@ -70,7 +70,7 @@ export default function ArticleDetailClient({ article, relatedArticles }: Articl
                 <div className="prose prose-lg max-w-none">
                   <div className="max-h-[550px] overflow-y-auto pr-3 custom-scrollbar">
                     <div
-                      className="text-navy-500/80 leading-relaxed text-sm font-medium space-y-5 text-justify [&_h1]:text-base [&_h1]:font-bold [&_h1]:text-navy-500 [&_h1]:mt-6 [&_h1]:mb-2 [&_h2]:text-base [&_h2]:font-bold [&_h2]:text-navy-500 [&_h2]:mt-6 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-navy-500 [&_h3]:mt-4 [&_h3]:mb-2 [&_ul]:space-y-2 [&_ul]:ml-4 [&_ul]:list-disc [&_ol]:list-decimal [&_li]:text-navy-500/70 [&_strong]:text-navy-500 [&_strong]:font-bold [&_p]:mb-4"
+                      className="text-navy-500/80 leading-relaxed text-sm font-medium space-y-5 text-justify [&_h1]:text-lg [&_h1]:font-extrabold [&_h1]:text-navy-500 [&_h1]:mt-6 [&_h1]:mb-2 [&_h2]:text-base [&_h2]:font-extrabold [&_h2]:text-navy-500 [&_h2]:border-l-4 [&_h2]:border-brand-500 [&_h2]:pl-3 [&_h2]:py-1 [&_h2]:mt-6 [&_h2]:mb-3 [&_h2]:bg-brand-50/40 [&_h2]:rounded-r-lg [&_h3]:text-sm [&_h3]:font-bold [&_h3]:text-navy-500 [&_h3]:mt-4 [&_h3]:mb-2 [&_ul]:space-y-2 [&_ul]:ml-4 [&_ul]:list-disc [&_ol]:list-decimal [&_li]:text-navy-500/70 [&_strong]:text-navy-500 [&_strong]:font-bold [&_p]:mb-4"
                       dangerouslySetInnerHTML={{ __html: renderMarkdown(article.content) }}
                     />
                   </div>

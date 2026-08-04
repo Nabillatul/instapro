@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -60,9 +60,10 @@ const fallbackCoach: Coach = {
 };
 
 const schedules = [
-  { day: "Sabtu - Minggu", time: "09:00 - 16:00 WIB", topic: "Intensive Boot Camp" },
-  { day: "Setiap Bulan", time: "Sesuai Jadwal Rilis", topic: "Batch Baru Dibuka" },
-  { day: "Online / Offline", time: "Fleksibel / On-site", topic: "Lokasi Menyesuaikan" },
+  { day: "20 Agustus 2026", time: "09:00 - 16:00 WIB", topic: "Offline" },
+  { day: "7 Agustus 2026", time: "Sesuai Jadwal Rilis", topic: "Online" },
+  { day: "Menyesuaikan", time: "Fleksibel / On-site", topic: "Privat Class" },
+  { day: "Menyesuaikan", time: "Jadwal Menyesuaikan", topic: "Reguler" },
 ];
 
 export default function KelasQuantumPage() {
@@ -71,6 +72,18 @@ export default function KelasQuantumPage() {
   const [loadingPhotos, setLoadingPhotos] = useState(true);
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [selectedPhoto, setSelectedPhoto] = useState<ClassPhoto | null>(null);
+
+  const coachScrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollCoach = (direction: "left" | "right") => {
+    if (coachScrollRef.current) {
+      const scrollAmount = 380;
+      coachScrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   // Auto-rotating photo gallery index
   const [activePhotoIdx, setActivePhotoIdx] = useState(0);
@@ -207,32 +220,70 @@ export default function KelasQuantumPage() {
             <ul className="space-y-3 text-navy-500/70 text-xs font-bold relative z-10">
               <li className="flex items-start gap-2">
                 <CheckCircle2 size={16} className="text-brand-500 mt-0.5 flex-shrink-0" />
-                Literasi & Keamanan Digital Dasar
+                Fundamental & Mindset
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 size={16} className="text-brand-500 mt-0.5 flex-shrink-0" />
-                UI/UX Design & Prototyping Sistem
+                Struktur Bicara yang Jelas
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 size={16} className="text-brand-500 mt-0.5 flex-shrink-0" />
-                Pengembangan Web & Tata Kelola Sistem Informasi
+                Voice & Delivery
               </li>
               <li className="flex items-start gap-2">
                 <CheckCircle2 size={16} className="text-brand-500 mt-0.5 flex-shrink-0" />
-                Social Media Strategy & Content Creator
+                Body Language & Confidence
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 size={16} className="text-brand-500 mt-0.5 flex-shrink-0" />
+                Storytelling & Persuasi
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 size={16} className="text-brand-500 mt-0.5 flex-shrink-0" />
+                Improvisasi & Handling Audience
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 size={16} className="text-brand-500 mt-0.5 flex-shrink-0" />
+                Personal Branding Speaker
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 size={16} className="text-brand-500 mt-0.5 flex-shrink-0" />
+                Final Presentation
               </li>
             </ul>
           </motion.div>
         </div>
       </section>
 
-      {/* ===== SECTION COACH (DYNAMIC COACH LIST WITH 3D ANIMATED CARDS) ===== */}
+      {/* ===== SECTION COACH (DYNAMIC COACH LIST WITH HORIZONTAL SCROLL CAROUSEL) ===== */}
       <section className="relative z-10 section-container mb-24 overflow-hidden">
         <SectionHeading
           badge="Head Coach & Mentor"
           title="Instruktur Utama Kelas"
           subtitle="Praktisi senior yang membimbing dan mengawal peningkatan kapasitas SDM Anda."
+          centered={true}
         />
+        <div className="flex justify-center items-center gap-3 mt-4 mb-8">
+          <motion.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            onClick={() => scrollCoach("left")}
+            className="w-11 h-11 rounded-full glass bg-white border border-navy-500/10 shadow-md text-navy-500 flex items-center justify-center hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all cursor-pointer"
+            aria-label="Scroll Coach Left"
+          >
+            <ChevronLeft size={20} />
+          </motion.button>
+          <span className="text-xs font-bold text-navy-500/40 uppercase tracking-wider px-1">Geser Coach</span>
+          <motion.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            onClick={() => scrollCoach("right")}
+            className="w-11 h-11 rounded-full glass bg-white border border-navy-500/10 shadow-md text-navy-500 flex items-center justify-center hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all cursor-pointer"
+            aria-label="Scroll Coach Right"
+          >
+            <ChevronRight size={20} />
+          </motion.button>
+        </div>
 
         {/* Background Decorative */}
         <motion.div
@@ -248,162 +299,110 @@ export default function KelasQuantumPage() {
           transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
         />
 
-        <div className="max-w-4xl mx-auto mt-12 relative z-10 space-y-10">
+        {/* Horizontal Scroll Track */}
+        <div
+          ref={coachScrollRef}
+          className="flex gap-6 overflow-x-auto pb-8 pt-2 px-1 snap-x snap-mandatory scroll-smooth scrollbar-thin scrollbar-thumb-brand-400/30 scrollbar-track-transparent relative z-10"
+        >
           {displayCoaches.map((coach, cIdx) => (
             <motion.div
               key={coach.id || cIdx}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="glass rounded-3xl bg-white border border-navy-500/5 shadow-xl overflow-hidden"
+              transition={{ duration: 0.5, delay: cIdx * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              className="flex-none w-[310px] sm:w-[360px] md:w-[380px] snap-start glass rounded-3xl bg-white border border-navy-500/10 shadow-xl overflow-hidden flex flex-col justify-between"
             >
-              <div className="grid grid-cols-1 md:grid-cols-[380px_1fr]">
+              {/* TOP — Photo Panel */}
+              <div className="relative bg-gradient-to-br from-navy-500 via-navy-600 to-navy-800 flex flex-col items-center justify-center p-8 text-center overflow-hidden min-h-[260px]">
+                {/* Animated background circles */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <motion.div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 rounded-full border border-white/5"
+                    animate={{ scale: [1, 1.15, 1], rotate: [0, 180, 360] }}
+                    transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+                  />
+                  <div className="absolute top-2 right-2 w-16 h-16 rounded-full bg-brand-500/20 blur-xl" />
+                  <div className="absolute bottom-2 left-2 w-20 h-20 rounded-full bg-brand-400/10 blur-xl" />
+                </div>
 
-                {/* LEFT — Photo Panel */}
+                {/* Floating badge */}
+                <div className="absolute top-4 left-4 bg-brand-500 text-white text-[10px] font-extrabold uppercase tracking-wider px-3 py-1 rounded-full shadow-md z-20 flex items-center gap-1">
+                  <Sparkles size={10} /> Lead Instructor
+                </div>
+
+                {/* 3D-tilt Photo Frame */}
                 <motion.div
-                  initial={{ opacity: 0, x: -40 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.7, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative bg-gradient-to-br from-navy-500 via-navy-600 to-navy-800 flex flex-col items-center justify-center p-10 min-h-[360px] overflow-hidden"
+                  whileHover={{ scale: 1.05, rotateY: 5 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                  className="relative w-32 h-32 sm:w-36 sm:h-36 rounded-2xl overflow-hidden border-4 border-white/20 shadow-2xl z-10"
                 >
-                  {/* Animated background circles */}
-                  <motion.div
-                    className="absolute inset-0 pointer-events-none"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                  >
-                    <motion.div
-                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full border border-white/5"
-                      animate={{ scale: [1, 1.15, 1], rotate: [0, 180, 360] }}
-                      transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-                    />
-                    <motion.div
-                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full border border-white/8"
-                      animate={{ scale: [1.1, 1, 1.1], rotate: [360, 180, 0] }}
-                      transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-                    />
-                    <div className="absolute top-4 right-4 w-16 h-16 rounded-full bg-brand-500/20 blur-xl" />
-                    <div className="absolute bottom-4 left-4 w-20 h-20 rounded-full bg-brand-400/10 blur-xl" />
-                  </motion.div>
-
-                  {/* 3D-tilt Photo Frame */}
-                  <motion.div
-                    whileHover={{
-                      rotateY: 8,
-                      rotateX: -4,
-                      scale: 1.04,
-                      boxShadow: "0 40px 80px -20px rgba(0,0,0,0.5)",
-                    }}
-                    style={{ transformPerspective: 800 }}
-                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                    className="relative w-44 h-44 rounded-3xl overflow-hidden border-4 border-white/20 shadow-2xl z-10"
-                  >
-                    <img
-                      src={coach.image}
-                      alt={coach.name}
-                      className="w-full h-full object-cover"
-                    />
-                    {/* Shimmer overlay on hover */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"
-                      initial={{ x: "-100%", opacity: 0 }}
-                      whileHover={{ x: "100%", opacity: 1 }}
-                      transition={{ duration: 0.6 }}
-                    />
-                  </motion.div>
-
-                  {/* Floating badge */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.85 }}
-                    whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.5, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    animate={{ y: [0, -5, 0] }}
-                    className="absolute top-6 left-6 bg-brand-500 text-white text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full shadow-lg z-20 flex items-center gap-1.5"
-                  >
-                    <Sparkles size={10} /> Lead Instructor
-                  </motion.div>
-
-                  {/* Name overlay at bottom */}
-                  <div className="mt-6 text-center z-10 relative">
-                    <h4 className="text-white font-extrabold text-lg leading-tight">{coach.name}</h4>
-                    <p className="text-brand-300 text-xs font-bold mt-1">{coach.title}</p>
-                  </div>
+                  <img
+                    src={coach.image}
+                    alt={coach.name}
+                    className="w-full h-full object-cover"
+                  />
                 </motion.div>
 
-                {/* RIGHT — Description Panel */}
-                <motion.div
-                  initial={{ opacity: 0, x: 40 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.7, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                  className="p-8 md:p-10 flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center gap-2 text-brand-500 text-xs font-extrabold uppercase tracking-wider mb-4">
-                      <Quote size={16} />
-                      <span>Tentang Coach</span>
-                    </div>
-                    <p className="text-navy-500/80 text-sm leading-relaxed font-medium mb-8">
-                      {coach.bio}
-                    </p>
+                {/* Name & Title */}
+                <div className="mt-4 z-10 relative">
+                  <h4 className="text-white font-extrabold text-base leading-tight line-clamp-1">{coach.name}</h4>
+                  <p className="text-brand-300 text-xs font-bold mt-1 line-clamp-1">{coach.title}</p>
+                </div>
+              </div>
 
-                    {/* Skills with stagger */}
-                    {coach.skills && coach.skills.length > 0 && (
-                      <div>
-                        <p className="text-[10px] font-extrabold text-navy-500/40 uppercase tracking-wider mb-3">Keahlian Utama</p>
-                        <div className="flex flex-wrap gap-2">
-                          {coach.skills.map((skill, idx) => (
-                            <motion.span
-                              key={idx}
-                              initial={{ opacity: 0, scale: 0.8, y: 8 }}
-                              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                              viewport={{ once: true }}
-                              transition={{ delay: 0.35 + idx * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                              whileHover={{ scale: 1.08, y: -2 }}
-                              className="px-4 py-2 rounded-full bg-gradient-to-r from-brand-50 to-blush-50 text-brand-600 text-xs font-bold border border-brand-500/15 shadow-sm cursor-default"
-                            >
-                              {skill}
-                            </motion.span>
-                          ))}
-                        </div>
+              {/* BOTTOM — Content & Details */}
+              <div className="p-6 flex-1 flex flex-col justify-between bg-white">
+                <div>
+                  <div className="flex items-center gap-1.5 text-brand-500 text-[11px] font-extrabold uppercase tracking-wider mb-2">
+                    <Quote size={14} />
+                    <span>Tentang Coach</span>
+                  </div>
+                  <p className="text-navy-500/80 text-xs leading-relaxed font-medium mb-6 line-clamp-4">
+                    {coach.bio}
+                  </p>
+
+                  {/* Skills */}
+                  {coach.skills && coach.skills.length > 0 && (
+                    <div className="mb-6">
+                      <p className="text-[10px] font-extrabold text-navy-500/40 uppercase tracking-wider mb-2">Keahlian Utama</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {coach.skills.map((skill, idx) => (
+                          <span
+                            key={idx}
+                            className="px-3 py-1 rounded-full bg-gradient-to-r from-brand-50 to-blush-50 text-brand-600 text-[11px] font-bold border border-brand-500/15"
+                          >
+                            {skill}
+                          </span>
+                        ))}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
+                </div>
 
-                  {/* CTA */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.6 }}
-                    className="mt-8 pt-6 border-t border-navy-500/5 flex flex-col sm:flex-row gap-3"
+                {/* CTA Buttons */}
+                <div className="pt-4 border-t border-navy-500/5 flex flex-col gap-2">
+                  <motion.a
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    href="https://quantumclass.instapro.kelompok-6.site/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-primary text-xs py-2.5 w-full flex items-center justify-center gap-2"
                   >
-                    <motion.a
-                      whileHover={{ scale: 1.04 }}
-                      whileTap={{ scale: 0.97 }}
-                      href="https://quantumclass.instapro.kelompok-6.site/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-primary text-xs py-3"
-                    >
-                      <GraduationCap size={16} /> Daftar Kelas Sekarang
-                    </motion.a>
-                    <motion.a
-                      whileHover={{ scale: 1.04 }}
-                      whileTap={{ scale: 0.97 }}
-                      href={getWhatsAppLink ? getWhatsAppLink(`Halo, saya ingin berkonsultasi mengenai pelatihan dengan Coach ${coach.name}.`) : "https://wa.me/"}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-secondary text-xs py-3 border-navy-500/10 text-navy-500 hover:bg-navy-50"
-                    >
-                      <MessageCircle size={16} /> Tanya via WhatsApp
-                    </motion.a>
-                  </motion.div>
-                </motion.div>
+                    <GraduationCap size={15} /> Daftar Kelas
+                  </motion.a>
+                  <motion.a
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    href={getWhatsAppLink ? getWhatsAppLink(`Halo, saya ingin berkonsultasi mengenai pelatihan dengan Coach ${coach.name}.`) : "https://wa.me/"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-secondary text-xs py-2.5 w-full border-navy-500/10 text-navy-500 hover:bg-navy-50 flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle size={15} /> Tanya via WhatsApp
+                  </motion.a>
+                </div>
               </div>
             </motion.div>
           ))}
@@ -548,34 +547,30 @@ export default function KelasQuantumPage() {
         )}
       </section>
 
-      {/* Benefits */}
-      <section className="relative z-10 section-container mb-20">
-        <SectionHeading badge="Keunggulan" title="Benefit Mengikuti Kelas" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-          {benefits.map((benefit, idx) => (
-            <div key={idx} className="glass rounded-2xl bg-white border border-navy-500/5 p-6 card-hover shadow-sm">
-              <div className="w-12 h-12 rounded-xl bg-brand-50/50 flex items-center justify-center mb-4">
-                {benefit.icon}
-              </div>
-              <h4 className="text-navy-500 font-extrabold text-sm mb-2">{benefit.title}</h4>
-              <p className="text-navy-500/60 text-xs font-semibold leading-relaxed">{benefit.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+
 
       {/* Schedule */}
       <section className="relative z-10 section-container mb-20">
         <div className="glass rounded-3xl p-8 md:p-12 border border-brand-500/10 bg-white/95 text-center">
           <SectionHeading badge="Jadwal" title="Jadwal Pelaksanaan Umum" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-12 text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mt-12 text-left">
             {schedules.map((schedule, idx) => (
-              <div key={idx} className="rounded-xl border border-navy-500/5 bg-blush-50/20 p-6 text-center">
-                <Calendar className="text-brand-500 mx-auto mb-3" size={24} />
-                <h4 className="text-navy-500 font-extrabold text-sm mb-1">{schedule.topic}</h4>
-                <p className="text-brand-500 font-bold text-xs mb-2">{schedule.day}</p>
-                <p className="text-navy-500/50 text-[11px] font-bold uppercase">{schedule.time}</p>
-              </div>
+              <motion.div
+                key={idx}
+                whileHover={{ y: -6, transition: { duration: 0.2 } }}
+                className="rounded-2xl border border-navy-500/10 bg-gradient-to-b from-white to-blush-50/40 p-6 text-center shadow-sm hover:shadow-lg hover:border-brand-500/20 transition-all flex flex-col justify-between"
+              >
+                <div>
+                  <div className="w-12 h-12 rounded-2xl bg-brand-500/10 text-brand-500 flex items-center justify-center mx-auto mb-4 border border-brand-500/10">
+                    <Calendar size={24} />
+                  </div>
+                  <h4 className="text-navy-500 font-extrabold text-sm mb-1.5 leading-snug">{schedule.topic}</h4>
+                  <p className="text-brand-500 font-bold text-xs mb-2">{schedule.day}</p>
+                </div>
+                <p className="text-navy-500/60 text-[11px] font-extrabold uppercase tracking-wider bg-navy-500/5 py-1.5 px-3 rounded-full inline-block mx-auto mt-3">
+                  {schedule.time}
+                </p>
+              </motion.div>
             ))}
           </div>
         </div>

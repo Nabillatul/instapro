@@ -61,7 +61,11 @@ export function renderMarkdown(md: string): string {
   // Headers (# Header 1)
   html = html.replace(/^#[ \t]+(.*?)$/gm, "<h1>$1</h1>");
 
-  // Convert inline or standalone "Penghargaan..." patterns into h2 subheadings
+  // Flexible subheadings: "Subjudul: ...", "Sub-judul: ...", "[Subjudul: ...]", or standalone heading lines
+  html = html.replace(/(?:^|\n)(?:Subjudul|Sub-judul):\s*(.*?)(?=\n|$)/gi, "\n<h2>$1</h2>\n");
+  html = html.replace(/(?:^|\n)\[(?:Subjudul|Judul|Sub-judul|Penghargaan):\s*(.*?)\]/gi, "\n<h2>$1</h2>\n");
+
+  // Convert standalone "Penghargaan..." patterns into h2 subheadings
   html = html.replace(/(?:^|\n|\.\s+)(Penghargaan[^\n\.<]*)/gi, "\n<h2>$1</h2>\n");
 
   // Bullet points (- List item or * List item)

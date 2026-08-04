@@ -316,9 +316,13 @@ export default function ArticleManager({ articles }: ArticleManagerProps) {
                     rows={8}
                     value={form.content}
                     onChange={(e) => setForm({ ...form, content: e.target.value })}
+                    placeholder="Tuliskan isi berita atau artikel di sini. Gunakan ## atau Subjudul: Judul Anda untuk membuat subjudul."
                     className="w-full p-4 rounded-xl border border-navy-100 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-brand-500/20 bg-navy-50/5 leading-relaxed"
                     required
                   />
+                  <p className="text-[11px] text-navy-500/50 font-medium mt-1">
+                    💡 <strong>Tips Subjudul:</strong> Ketik <code className="bg-navy-50 px-1 py-0.5 rounded border text-brand-600 font-bold">## Judul Subjudul Anda</code> atau <code className="bg-navy-50 px-1 py-0.5 rounded border text-brand-600 font-bold">Subjudul: Teks Anda</code> untuk menjadikan teks sebagai subjudul artikel.
+                  </p>
                 </div>
 
                 <div className="flex items-center justify-between pt-4 border-t border-navy-500/5">
